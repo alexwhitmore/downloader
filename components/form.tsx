@@ -26,6 +26,8 @@ export function Form() {
   //   'https://yellow-pond-3c4e32a61b6f43eb84b9e861cea86b25.azurewebsites.net/api'
 
   const handleSearch = async () => {
+    if (!videoUrl) return
+
     setSearchLoading(true)
 
     try {
