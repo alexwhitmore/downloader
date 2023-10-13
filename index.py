@@ -1,4 +1,5 @@
 import os
+import re
 from flask import Flask, request, jsonify, request
 from flask_cors import CORS, cross_origin
 from yt_dlp import YoutubeDL
@@ -17,6 +18,19 @@ SUPABASE_BUCKET_NAME = "images"
 supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
+def sanitize(input_string):
+    # Remove special characters using regular expression
+    sanitized_string = re.sub(r"[^\w\s]", "", input_string)
+
+    # Replace spaces with underscores and convert to lowercase
+    sanitized_and_lowercased = sanitized_string.replace(" ", "_").lower()
+
+    # Remove consecutive underscores and ensure there's only one
+    sanitized_final = re.sub(r"_+", "_", sanitized_and_lowercased)
+
+    return sanitized_final
+
+
 @app.route("/api/upload_youtube", methods=["POST"])
 @cross_origin()
 def upload_youtube_video():
@@ -33,16 +47,22 @@ def upload_youtube_video():
         with YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=True)
 
-        video_file_path = f"/tmp/temp.{info_dict['ext']}"
+        video_title = sanitize(info_dict["title"])
+        video_extension = info_dict["ext"]
+        file_to_upload = f"{video_title}.{video_extension}"
+        video_file_path = f"/tmp/{file_to_upload}"
+
+        os.rename(f"/tmp/temp.{video_extension}", video_file_path)
 
         with open(video_file_path, "rb") as video_file:
+            # Upload the video file to Supabase Storage with the custom file name
             supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
                 file=video_file,
-                path=f"temp.{info_dict['ext']}",
+                path=file_to_upload,  # Use the custom file name here
                 file_options={"content-type": "video/mp4"},
             )
 
-        os.remove(video_file_path)
+        os.remove(video_file_path)  # Clean up the temporary file
 
         return jsonify({"message": "Video uploaded successfully."}), 200
     except Exception as e:
@@ -67,7 +87,7 @@ def get_thumbnail_url():
             video_title = info_dict["title"]
 
         if thumbnail_url:
-            response_data = {"url": thumbnail_url, "title": video_title}
+            response_data = {"url": thumbnail_url, "title": sanitize(video_title)}
             return jsonify(response_data), 200
         else:
             return jsonify({"message": "No thumbnail available."}), 404

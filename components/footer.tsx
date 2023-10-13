@@ -33,9 +33,10 @@ export function Footer() {
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
-      <div className="max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
+      <div className="px-6 pb-8 pt-16 sm:pt-24 lg:px-0 lg:pt-32 mx-auto">
+        {' '}
+        {/* Removed max-w-7xl */}
         <div className="text-center">
-          {' '}
           {/* Center content */}
           <div className="space-y-8">
             <p className="text-sm leading-6">
@@ -55,7 +56,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-8 sm:mt-20 lg:mt-24">
+        <div className="mt-8 border-t border-border pt-8 sm:mt-20 lg:mt-24 w-screen">
           <p className="text-xs text-center text-muted-foreground">
             &copy; {new Date().getFullYear()} Downloader. All rights reserved.
           </p>
