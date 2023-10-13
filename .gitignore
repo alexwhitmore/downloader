@@ -37,3 +37,5 @@ next-env.d.ts
 .vscode/
 backend/__pycache__/*.pyc
 __pycache__/*.pyc
+
+.azure/*
