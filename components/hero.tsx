@@ -27,7 +27,7 @@ export function Hero() {
       </svg>
       <div className="mx-auto max-w-6xl px-6 md:pt-10 pb-0 sm:pb-12 lg:flex lg:px-8 lg:py-40 lg:items-center lg:justify-between">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-          <div className="mt-10">
+          <div className="mt-3 sm:mt-10">
             <a href="#" className="inline-flex space-x-6">
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold leading-6 text-primary ring-1 ring-inset ring-primary/10">
                 What's new
@@ -44,7 +44,7 @@ export function Hero() {
           <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl">
             Personal YouTube videos at your fingertips
           </h1>
-          <p className="mt-10 mb-10 text-lg leading-8 text-foreground/90">
+          <p className="mt-10 mb-5 text-lg leading-8 text-foreground/90">
             In just a matter of clicks you can have your own personal database
             of YouTube videos.
           </p>
