@@ -1,7 +1,6 @@
 import os
 from flask import Flask, request, jsonify, request
 from flask_cors import CORS, cross_origin
-from azure.storage.blob import BlobServiceClient
 from yt_dlp import YoutubeDL
 import logging
 from supabase import create_client
@@ -27,8 +26,8 @@ def upload_youtube_video():
             return jsonify({"error": "No video URL provided."}), 400
 
         ydl_opts = {
-            "format": "best",  # Choose the best quality format
-            "outtmpl": "/tmp/temp.%(ext)s",  # Specify the tmp directory
+            "format": "best",
+            "outtmpl": "/tmp/temp.%(ext)s",
         }
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -36,7 +35,6 @@ def upload_youtube_video():
 
         video_file_path = f"/tmp/temp.{info_dict['ext']}"
 
-        # Upload the video file to Supabase Storage
         with open(video_file_path, "rb") as video_file:
             supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
                 file=video_file,
@@ -44,12 +42,10 @@ def upload_youtube_video():
                 file_options={"content-type": "video/mp4"},
             )
 
-        # Clean up the temporary video file
         os.remove(video_file_path)
 
         return jsonify({"message": "Video uploaded successfully."}), 200
     except Exception as e:
-        # Log the error for debugging
         logging.error(f"Error uploading the video: {str(e)}")
         return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
 
@@ -77,43 +73,6 @@ def get_thumbnail_url():
             return jsonify({"message": "No thumbnail available."}), 404
     except Exception as e:
         return jsonify({"error": f"Error getting the thumbnail URL: {str(e)}"}), 500
-
-
-@app.route("/api/download_video", methods=["GET"])
-@cross_origin()
-def download_video():
-    try:
-        # Specify the file name you want to download
-        file_name = "temp.mp4"  # Replace with the desired file name
-
-        video_file_path = "temp.mp4"
-
-        # Download the video file from Supabase Storage
-        # response = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).download(
-        #     file_name
-        # )
-        with open(video_file_path, "wb+") as f:
-            res = supabase_client.storage.from_(SUPABASE_BUCKET_NAME).download(
-                video_file_path
-            )
-            f.write(res)
-
-        # Check if the file exists in Supabase Storage
-        # if response.status_code == 404:
-        #     return jsonify({"error": "File not found."}), 404
-        # if response.status_code != 200:
-        #     return jsonify({"error": "Error downloading the file."}), 500
-
-        # # Stream the file to the client as an attachment
-        # file_data = response.content
-        # response = Response(file_data)
-        # response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
-        # return response
-        return jsonify({"message": "Video uploaded successfully."}), 200
-    except Exception as e:
-        # Log the error for debugging
-        logging.error(f"Error downloading the file: {str(e)}")
-        return jsonify({"error": f"Error downloading the file: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
