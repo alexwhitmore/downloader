@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, request, Response
+from flask import Flask, request, jsonify, request
 from flask_cors import CORS, cross_origin
 from azure.storage.blob import BlobServiceClient
 from yt_dlp import YoutubeDL
