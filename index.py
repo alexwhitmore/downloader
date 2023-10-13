@@ -1,19 +1,20 @@
 import os
-from flask import Flask, request, jsonify, request, Response
+from flask import Flask, request, jsonify, request
 from flask_cors import CORS, cross_origin
-from azure.storage.blob import BlobServiceClient
 from yt_dlp import YoutubeDL
 import logging
+from supabase import create_client
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["CORS_HEADERS"] = "Content-Type"
 
-blob_service_client = BlobServiceClient.from_connection_string(
-    "DefaultEndpointsProtocol=https;AccountName=dlprodwus2st;AccountKey=jSoIuWP0h5sFiCOUBDbWmiHr6SfJkKKQBTSKzS/AbMA6qLffbDuB4n1VeKc9KdoYwcjWGOGsOD5t+AStYPtriA==;EndpointSuffix=core.windows.net"
-)
-container_name = "videos"
+SUPABASE_URL = "https://hhltmpiizvmmcjlkxeos.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhobHRtcGlpenZtbWNqbGt4ZW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjI5MDA3NTEsImV4cCI6MTk3ODQ3Njc1MX0.dwT1L_WD0CZV1XSrc91wqByVOtlgfwWeLm7Dls4aQxk"
+SUPABASE_BUCKET_NAME = "images"
+
+supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
 @app.route("/api/upload_youtube", methods=["POST"])
@@ -25,8 +26,8 @@ def upload_youtube_video():
             return jsonify({"error": "No video URL provided."}), 400
 
         ydl_opts = {
-            "format": "best",  # Choose the best quality format
-            "outtmpl": "/tmp/temp.%(ext)s",  # Specify the tmp directory
+            "format": "best",
+            "outtmpl": "/tmp/temp.%(ext)s",
         }
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -34,14 +35,17 @@ def upload_youtube_video():
 
         video_file_path = f"/tmp/temp.{info_dict['ext']}"
 
-        # Upload the video file to Azure Blob Storage
-        container_client = blob_service_client.get_container_client(container_name)
         with open(video_file_path, "rb") as video_file:
-            container_client.upload_blob(name="temp.mp4", data=video_file)
+            supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
+                file=video_file,
+                path=f"temp.{info_dict['ext']}",
+                file_options={"content-type": "video/mp4"},
+            )
+
+        os.remove(video_file_path)
 
         return jsonify({"message": "Video uploaded successfully."}), 200
     except Exception as e:
-        # Log the error for debugging
         logging.error(f"Error uploading the video: {str(e)}")
         return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
 
@@ -69,30 +73,6 @@ def get_thumbnail_url():
             return jsonify({"message": "No thumbnail available."}), 404
     except Exception as e:
         return jsonify({"error": f"Error getting the thumbnail URL: {str(e)}"}), 500
-
-
-@app.route("/api/download_video", methods=["GET"])
-@cross_origin()
-def download_video():
-    try:
-        # Specify the file name you want to download
-        blob_name = "temp.mp4"  # Replace with the desired file name
-
-        container_client = blob_service_client.get_container_client(container_name)
-
-        # Get the blob client for the specified file
-        blob_client = container_client.get_blob_client(blob=blob_name)
-
-        # Check if the file exists in Azure Blob Storage
-        if not blob_client.exists():
-            return jsonify({"error": "File not found."}), 404
-
-        # Stream the file from Azure Blob Storage to the client
-        response = Response(blob_client.download_blob().readall())
-        response.headers["Content-Disposition"] = f"attachment; filename={blob_name}"
-        return response
-    except Exception as e:
-        return jsonify({"error": f"Error downloading the file: {str(e)}"}), 500
 
 
 if __name__ == "__main__":

@@ -7,6 +7,14 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/empty-state'
 
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://hhltmpiizvmmcjlkxeos.supabase.co'
+const supabaseKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhobHRtcGlpenZtbWNqbGt4ZW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjI5MDA3NTEsImV4cCI6MTk3ODQ3Njc1MX0.dwT1L_WD0CZV1XSrc91wqByVOtlgfwWeLm7Dls4aQxk'
+
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 export function Form() {
   const [videoInfo, setVideoInfo] = useState({ url: '', title: '' })
   const [videoUrl, setVideoUrl] = useState('')
@@ -62,39 +70,21 @@ export function Form() {
     setDownloadLoading(true)
 
     try {
-      const response = await fetch(`${apiUrl}/download_video`, {
-        method: 'GET',
-      })
+      const { data } = await supabase.storage
+        .from('images')
+        .getPublicUrl('temp.mp4', {
+          download: true,
+        })
 
-      if (response.ok) {
-        // Get the content disposition header from the response
-        const contentDisposition = response.headers.get('Content-Disposition')
+      const publicUrl = data.publicUrl
 
-        // Extract the filename from the content disposition header
-        const filenameMatch = contentDisposition?.match(/filename="(.+)"/)
-        const filename = filenameMatch ? filenameMatch[1] : 'temp.mp4'
-
-        // Create a Blob object from the response data
-        const blob = await response.blob()
-
-        // Create a temporary URL for the Blob
-        const url = window.URL.createObjectURL(blob)
-
-        // Create a temporary anchor element to trigger the download
-        const a = document.createElement('a')
-        a.href = url
-        a.download = filename // Set the filename obtained from the API
-        a.click()
-
-        // Clean up by revoking the temporary URL
-        window.URL.revokeObjectURL(url)
-      } else {
-        console.error('Error downloading video:', response.status)
-      }
-    } catch (error) {
-      console.error('Error downloading video:', error)
+      const a = document.createElement('a')
+      a.href = publicUrl
+      a.download = 'temp.mp4'
+      a.click()
+    } catch {
+      console.log('issue')
     }
-
     setDownloadLoading(false)
   }
 
