@@ -13,7 +13,8 @@ export function Form() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [downloadLoading, setDownloadLoading] = useState(false)
 
-  const apiUrl = `https://${process.env.NEXT_PUBLIC_AZURE_URL}/api`
+  const apiUrl =
+    'https://yellow-pond-3c4e32a61b6f43eb84b9e861cea86b25.azurewebsites.net/api'
 
   const handleSearch = async () => {
     if (!videoUrl) {

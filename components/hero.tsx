@@ -27,7 +27,7 @@ export function Hero() {
       </svg>
       <div className="mx-auto max-w-6xl px-6 md:pt-10 pb-0 sm:pb-12 lg:flex lg:px-8 lg:py-40 lg:items-center lg:justify-between">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-          <div className="mt-3 sm:mt-10">
+          <div className="mt-6 sm:mt-10">
             <a href="#" className="inline-flex space-x-6">
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold leading-6 text-primary ring-1 ring-inset ring-primary/10">
                 What's new
