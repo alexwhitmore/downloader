@@ -1,4 +1,5 @@
 Flask==2.3.2
 Flask-Cors==3.0.10
 yt-dlp==2023.10.07
+dotenv
 azure.storage.blob

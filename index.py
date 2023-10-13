@@ -1,14 +1,18 @@
-from flask import Flask, request, jsonify, request, Response, send_file
+import os
+from flask import Flask, request, jsonify, request, Response
 from flask_cors import CORS, cross_origin
 from azure.storage.blob import BlobServiceClient
 from yt_dlp import YoutubeDL
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["CORS_HEADERS"] = "Content-Type"
 
-# Initialize Azure BlobServiceClient
-connection_string = "DefaultEndpointsProtocol=https;AccountName=dlprodwus2st;AccountKey=jSoIuWP0h5sFiCOUBDbWmiHr6SfJkKKQBTSKzS/AbMA6qLffbDuB4n1VeKc9KdoYwcjWGOGsOD5t+AStYPtriA==;EndpointSuffix=core.windows.net"
+connection_string = os.getenv("CONNECTION_STRING")
+app.config["CONNECTION_STRING"] = connection_string
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
 container_name = "videos"
 
@@ -88,32 +92,6 @@ def download_video():
         return response
     except Exception as e:
         return jsonify({"error": f"Error downloading the file: {str(e)}"}), 500
-
-
-# @app.route("/api/download", methods=["GET"])
-# @cross_origin()
-# def download_video():
-#     try:
-#         # Get the desired blob name (file name) from the request
-#         blob_name = request.args.get("file_name")
-#         if not blob_name:
-#             return jsonify({"error": "No file name provided."}), 400
-
-#         container_client = blob_service_client.get_container_client(container_name)
-
-#         # Get the blob client for the specified file
-#         blob_client = container_client.get_blob_client(blob=blob_name)
-
-#         # Check if the file exists in Azure Blob Storage
-#         if not blob_client.exists():
-#             return jsonify({"error": "File not found."}), 404
-
-#         # Stream the file from Azure Blob Storage to the client
-#         response = Response(blob_client.download_blob().readall())
-#         response.headers["Content-Disposition"] = f"attachment; filename={blob_name}"
-#         return response
-#     except Exception as e:
-#         return jsonify({"error": f"Error downloading the file: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
