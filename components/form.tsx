@@ -15,16 +15,13 @@ export function Form() {
 
   const apiUrl =
     'https://yellow-pond-3c4e32a61b6f43eb84b9e861cea86b25.azurewebsites.net/api'
+  // const apiUrl = 'http://localhost:3000/api'
 
   const handleSearch = async () => {
-    if (!videoUrl) {
-      console.error('No video URL provided.')
-      return
-    }
-
     setSearchLoading(true)
 
     try {
+      // Fetch the YouTube thumbnail first
       const thumbnailResponse = await fetch(
         `${apiUrl}/get_thumbnail_url?video_url=${encodeURIComponent(videoUrl)}`
       )
@@ -70,6 +67,13 @@ export function Form() {
       })
 
       if (response.ok) {
+        // Get the content disposition header from the response
+        const contentDisposition = response.headers.get('Content-Disposition')
+
+        // Extract the filename from the content disposition header
+        const filenameMatch = contentDisposition?.match(/filename="(.+)"/)
+        const filename = filenameMatch ? filenameMatch[1] : 'temp.mp4'
+
         // Create a Blob object from the response data
         const blob = await response.blob()
 
@@ -79,7 +83,7 @@ export function Form() {
         // Create a temporary anchor element to trigger the download
         const a = document.createElement('a')
         a.href = url
-        a.download = 'temp.mp4' // Set the desired file name
+        a.download = filename // Set the filename obtained from the API
         a.click()
 
         // Clean up by revoking the temporary URL

@@ -3,17 +3,16 @@ from flask import Flask, request, jsonify, request, Response
 from flask_cors import CORS, cross_origin
 from azure.storage.blob import BlobServiceClient
 from yt_dlp import YoutubeDL
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["CORS_HEADERS"] = "Content-Type"
 
-connection_string = os.getenv("CONNECTION_STRING")
-app.config["CONNECTION_STRING"] = connection_string
-blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+blob_service_client = BlobServiceClient.from_connection_string(
+    "DefaultEndpointsProtocol=https;AccountName=dlprodwus2st;AccountKey=jSoIuWP0h5sFiCOUBDbWmiHr6SfJkKKQBTSKzS/AbMA6qLffbDuB4n1VeKc9KdoYwcjWGOGsOD5t+AStYPtriA==;EndpointSuffix=core.windows.net"
+)
 container_name = "videos"
 
 
@@ -42,6 +41,8 @@ def upload_youtube_video():
 
         return jsonify({"message": "Video uploaded successfully."}), 200
     except Exception as e:
+        # Log the error for debugging
+        logging.error(f"Error uploading the video: {str(e)}")
         return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
 
 
