@@ -19,7 +19,6 @@ export function Form() {
   const [videoUrl, setVideoUrl] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
   const [downloadLoading, setDownloadLoading] = useState(false)
-  const [isUploadComplete, setIsUploadComplete] = useState(false)
 
   const apiUrl = 'http://localhost:3000/api'
   // const apiUrl =
@@ -42,8 +41,16 @@ export function Form() {
       } else {
         console.error('Error fetching thumbnail:', thumbnailResponse.status)
       }
+    } catch (error) {
+      console.error('Error fetching thumbnail:', error)
+    }
+  }
 
-      const uploadResponse = await fetch(`${apiUrl}/upload_youtube`, {
+  const handleDownload = async () => {
+    setDownloadLoading(true)
+
+    try {
+      const downloadResponse = await fetch(`${apiUrl}/upload_youtube`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,42 +60,23 @@ export function Form() {
         }),
       })
 
-      if (uploadResponse.ok) {
-        console.log('Video upload started successfully.')
-        setIsUploadComplete(true)
+      if (downloadResponse.ok) {
+        const blob = await downloadResponse.blob()
+        const url = window.URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${videoInfo.title}.mp4`
+        a.click()
       } else {
-        setIsUploadComplete(true)
-        console.error('Error starting video upload:', uploadResponse.status)
+        console.error('Error downloading video:', downloadResponse.status)
+        setDownloadLoading(false)
       }
     } catch (error) {
-      console.error('Error fetching or uploading:', error)
-    }
-  }
-
-  const handleDownload = async () => {
-    setDownloadLoading(true)
-
-    try {
-      const { data } = await supabase.storage
-        .from('images')
-        .getPublicUrl(`${videoInfo.title}.mp4`, {
-          download: true,
-        })
-
-      setTimeout(() => {
-        setDownloadLoading(false)
-      }, 1000)
-
-      const publicUrl = data.publicUrl
-
-      const a = document.createElement('a')
-      a.href = publicUrl
-      a.download = `${videoInfo.title}.mp4`
-      a.click()
-    } catch (error) {
-      console.log('Error downloading video:', error)
+      console.error('Error downloading video:', error)
       setDownloadLoading(false)
     }
+    setDownloadLoading(false)
   }
 
   return (
@@ -132,12 +120,7 @@ export function Form() {
             className="rounded-lg"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-background/40">
-            {!isUploadComplete ? (
-              <Button variant="ghost" disabled>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Preparing download
-              </Button>
-            ) : !downloadLoading ? (
+            {!downloadLoading ? (
               <Button variant="ghost" size="lg" onClick={handleDownload}>
                 Download
               </Button>

@@ -1,6 +1,6 @@
 import os
 import re
-from flask import Flask, request, jsonify, request
+from flask import Flask, request, jsonify, request, send_file
 from flask_cors import CORS, cross_origin
 from yt_dlp import YoutubeDL
 import logging
@@ -54,17 +54,18 @@ def upload_youtube_video():
 
         os.rename(f"/tmp/temp.{video_extension}", video_file_path)
 
-        with open(video_file_path, "rb") as video_file:
-            # Upload the video file to Supabase Storage with the custom file name
-            supabase_client.storage.from_(SUPABASE_BUCKET_NAME).upload(
-                file=video_file,
-                path=file_to_upload,  # Use the custom file name here
-                file_options={"content-type": "video/mp4"},
-            )
+        # Return the video file as a response for download
+        response = send_file(
+            video_file_path,
+            as_attachment=True,
+            download_name=file_to_upload,
+            mimetype="video/mp4",
+        )
 
         os.remove(video_file_path)  # Clean up the temporary file
 
-        return jsonify({"message": "Video uploaded successfully."}), 200
+        return response
+
     except Exception as e:
         logging.error(f"Error uploading the video: {str(e)}")
         return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
