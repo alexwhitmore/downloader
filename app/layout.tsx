@@ -22,6 +22,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
             name="google-adsense-account"
             content="ca-pub-8041911799229977"
           />
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8041911799229977"
+            crossOrigin="anonymous"></script>
           <link
             rel="icon"
             href="/icon?<generated>"
