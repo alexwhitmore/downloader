@@ -7,13 +7,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/empty-state'
 
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = 'https://hhltmpiizvmmcjlkxeos.supabase.co'
-const supabaseKey = 'YOUR_SUPABASE_API_KEY'
-
-const supabase = createClient(supabaseUrl, supabaseKey)
-
 export function Form() {
   const [videoInfo, setVideoInfo] = useState({ url: '', title: '' })
   const [videoUrl, setVideoUrl] = useState('')

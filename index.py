@@ -1,26 +1,20 @@
 import os
 import re
+import logging
+
 from flask import Flask, request, jsonify, request, send_file
 from flask_cors import CORS, cross_origin
 from yt_dlp import YoutubeDL
-import logging
-from supabase import create_client
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 app.config["CORS_HEADERS"] = "Content-Type"
 
-SUPABASE_URL = "https://hhltmpiizvmmcjlkxeos.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhobHRtcGlpenZtbWNqbGt4ZW9zIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjI5MDA3NTEsImV4cCI6MTk3ODQ3Njc1MX0.dwT1L_WD0CZV1XSrc91wqByVOtlgfwWeLm7Dls4aQxk"
-SUPABASE_BUCKET_NAME = "images"
 
-supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-
-def sanitize(input_string):
+def sanitize(video_title: str):
     # Remove special characters using regular expression
-    sanitized_string = re.sub(r"[^\w\s]", "", input_string)
+    sanitized_string = re.sub(r"[^\w\s]", "", video_title)
 
     # Replace spaces with underscores and convert to lowercase
     sanitized_and_lowercased = sanitized_string.replace(" ", "_").lower()

@@ -18,6 +18,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head>
+          <meta
+            name="google-adsense-account"
+            content="ca-pub-8041911799229977"
+          />
           <link
             rel="icon"
             href="/icon?<generated>"
