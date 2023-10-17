@@ -1,11 +1,11 @@
 import os
 import re
 import logging
+
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from yt_dlp import YoutubeDL
 from starlette.responses import FileResponse
-from typing import Optional
 
 app = FastAPI()
 
