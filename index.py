@@ -2,23 +2,14 @@ import os
 import re
 import logging
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
+from flask import Flask, request, jsonify, request, send_file
+from flask_cors import CORS, cross_origin
 from yt_dlp import YoutubeDL
-from starlette.responses import FileResponse
 
-app = FastAPI()
 
-origins = ["*"]
-
-# Apply CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+app.config["CORS_HEADERS"] = "Content-Type"
 
 
 def sanitize(video_title: str):
@@ -34,12 +25,13 @@ def sanitize(video_title: str):
     return sanitized_final
 
 
-@app.post("/api/upload_youtube")
-async def upload_youtube_video(request_data: dict):
+@app.route("/api/upload_youtube", methods=["POST"])
+@cross_origin()
+def upload_youtube_video():
     try:
-        video_url = request_data.get("video_url")
+        video_url = request.json.get("video_url")
         if not video_url:
-            raise HTTPException(status_code=400, detail="No video URL provided.")
+            return jsonify({"error": "No video URL provided."}), 400
 
         ydl_opts = {
             "format": "best",
@@ -56,23 +48,27 @@ async def upload_youtube_video(request_data: dict):
 
         os.rename(f"/tmp/temp.{video_extension}", video_file_path)
 
-        return FileResponse(
+        # Return the video file as a response for download
+        response = send_file(
             video_file_path,
-            headers={"Content-Type": "video/mp4"},
-            filename=file_to_upload,
+            as_attachment=True,
+            download_name=file_to_upload,
+            mimetype="video/mp4",
         )
+
+        os.remove(video_file_path)  # Clean up the temporary file
+
+        return response
 
     except Exception as e:
         logging.error(f"Error uploading the video: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Error uploading the video: {str(e)}"
-        )
+        return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
 
 
-@app.get("/api/get_thumbnail_url")
-async def get_thumbnail_url(
-    video_url: str = Query(..., description="YouTube video URL")
-):
+@app.route("/api/get_thumbnail_url", methods=["GET"])
+@cross_origin()
+def get_thumbnail_url():
+    video_url = request.args.get("video_url")
     try:
         ydl_opts = {
             "skip_download": True,
@@ -87,11 +83,12 @@ async def get_thumbnail_url(
 
         if thumbnail_url:
             response_data = {"url": thumbnail_url, "title": sanitize(video_title)}
-            return response_data
+            return jsonify(response_data), 200
         else:
-            raise HTTPException(status_code=404, detail="No thumbnail available.")
-
+            return jsonify({"message": "No thumbnail available."}), 404
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error getting the thumbnail URL: {str(e)}"
-        )
+        return jsonify({"error": f"Error getting the thumbnail URL: {str(e)}"}), 500
+
+
+if __name__ == "__main__":
+    app.run()
