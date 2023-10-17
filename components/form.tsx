@@ -14,7 +14,7 @@ export function Form() {
   const [downloadLoading, setDownloadLoading] = useState(false)
 
   // const apiUrl = 'http://127.0.0.1:5000/api'
-  const apiUrl = process.env.NEXT_PUBLIC_PRODUCTION_AZURE_URL
+  const apiUrl = process.env.NEXT_PUBLIC_AZURE_URL
 
   const handleSearch = async () => {
     if (!videoUrl) return
