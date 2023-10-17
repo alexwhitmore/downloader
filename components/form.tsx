@@ -13,9 +13,9 @@ export function Form() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [downloadLoading, setDownloadLoading] = useState(false)
 
-  // const apiUrl = 'http://localhost:3000/api'
-  const apiUrl =
-    'https://yellow-pond-3c4e32a61b6f43eb84b9e861cea86b25.azurewebsites.net/api'
+  // const apiUrl = 'http://127.0.0.1:8000/api'
+  // const apiUrl =
+  ;('https://yellow-pond-3c4e32a61b6f43eb84b9e861cea86b25.azurewebsites.net/api')
 
   const handleSearch = async () => {
     if (!videoUrl) return
@@ -41,6 +41,7 @@ export function Form() {
 
   const handleDownload = async () => {
     setDownloadLoading(true)
+    const requestData = { video_url: videoUrl }
 
     try {
       const downloadResponse = await fetch(`${apiUrl}/upload_youtube`, {
@@ -48,9 +49,7 @@ export function Form() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          video_url: videoUrl,
-        }),
+        body: JSON.stringify(requestData),
       })
 
       if (downloadResponse.ok) {
