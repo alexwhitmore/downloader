@@ -15,21 +15,21 @@ export default function manifest(): MetadataRoute.Manifest {
         type: 'image/x-icon',
       },
       {
-        src: '/icon-192x192.png', // Replace with your 192x192 app icon
+        src: '/icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/icon-512x512.png', // Replace with your 512x512 app icon
+        src: '/icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
       },
     ],
-    theme_color: '#ffffff', // Replace with your primary theme color
-    background_color: '#ffffff', // Replace with your background color
+    theme_color: '#ffffff',
+    background_color: '#ffffff',
     prefer_related_applications: false,
     orientation: 'any',
-    scope: '/',
+    scope: '/', // Update the scope to '/'
     dir: 'auto',
     lang: 'en-US',
   }
