@@ -10,9 +10,9 @@ export function FAQs() {
     <div className="mx-auto max-w-7xl px-6 pt-24 sm:pt-32 pb-12 sm:pb-16">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1">
-          <AccordionTrigger>What is Downloader?</AccordionTrigger>
+          <AccordionTrigger>What is YouTube For All?</AccordionTrigger>
           <AccordionContent>
-            Downloader is a user-friendly online tool designed for fast and
+            YouTube For All is a user-friendly online tool designed for fast and
             secure YouTube video downloads. You can easily access your favorite
             videos while enjoying a free and reliable service.
           </AccordionContent>
@@ -35,13 +35,13 @@ export function FAQs() {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
-          <AccordionTrigger>Is Downloader safe to use?</AccordionTrigger>
+          <AccordionTrigger>Is YouTube For All safe to use?</AccordionTrigger>
           <AccordionContent>
-            Yes, Downloader is completely safe to use. We do not require any
-            login or credit card information, and we do not use cookies. Your
-            personal information is never stored on our platform. Furthermore,
-            our website undergoes regular updates to maintain a secure and
-            malware-free environment.
+            Yes, YouTube For All is completely safe to use. We do not require
+            any login or credit card information, and we do not use cookies.
+            Your personal information is never stored on our platform.
+            Furthermore, our website undergoes regular updates to maintain a
+            secure and malware-free environment.
           </AccordionContent>
         </AccordionItem>
       </Accordion>

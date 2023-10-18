@@ -1,4 +1,3 @@
-import { ChevronRightIcon } from 'lucide-react'
 import { Form } from './form'
 
 export function Hero() {
@@ -25,22 +24,8 @@ export function Hero() {
           fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)"
         />
       </svg>
-      <div className="mx-auto max-w-6xl px-6 md:pt-10 pb-0 sm:pb-12 lg:flex lg:px-8 lg:py-40 lg:items-center lg:justify-between">
+      <div className="pt-5 mx-auto max-w-6xl px-6 md:pt-40 pb-0 sm:pb-12 lg:flex lg:px-8 lg:py-40 lg:items-center lg:justify-between">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-          <div className="mt-6 sm:mt-10">
-            <a href="#" className="inline-flex space-x-6">
-              <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold leading-6 text-primary ring-1 ring-inset ring-primary/10">
-                What's new
-              </span>
-              <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-muted-foreground">
-                <span>Coming soon</span>
-                <ChevronRightIcon
-                  className="h-5 w-5 text-muted-foreground/90"
-                  aria-hidden="true"
-                />
-              </span>
-            </a>
-          </div>
           <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl">
             Personal YouTube videos at your fingertips
           </h1>
@@ -49,7 +34,7 @@ export function Hero() {
             of YouTube videos.
           </p>
         </div>
-        <div className="flex flex-col items-center mt-5 sm:mt-5 lg:mt-0">
+        <div className="flex flex-col items-center mt-5 sm:mt-5 lg:mt-0 w-full">
           <Form />
         </div>
       </div>

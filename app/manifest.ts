@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'YouTube Video Downloader',
+    name: 'YouTube For All',
     short_name: 'YT Downloader',
     description:
       'Download YouTube videos quickly and easily. Choose from three themes: light, dark, or system default.',
@@ -29,7 +29,7 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#ffffff',
     prefer_related_applications: false,
     orientation: 'any',
-    scope: '/', // Update the scope to '/'
+    scope: '/',
     dir: 'auto',
     lang: 'en-US',
   }

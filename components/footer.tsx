@@ -51,7 +51,8 @@ export function Footer() {
         </div>
         <div className="mt-8 border-t border-border pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs text-center text-muted-foreground">
-            &copy; {new Date().getFullYear()} Downloader. All rights reserved.
+            &copy; {new Date().getFullYear()} YouTube For All. All rights
+            reserved.
           </p>
         </div>
         <div className="flex justify-center mt-5">

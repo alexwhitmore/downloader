@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { track } from '@vercel/analytics'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -12,14 +13,15 @@ export function Form() {
   const [videoUrl, setVideoUrl] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
   const [downloadLoading, setDownloadLoading] = useState(false)
+  const [error, setError] = useState(null) // Add error state
 
-  // const apiUrl = 'http://127.0.0.1:5000/api'
   const apiUrl = process.env.NEXT_PUBLIC_AZURE_URL
 
   const handleSearch = async () => {
     if (!videoUrl) return
 
     setSearchLoading(true)
+    setError(null)
 
     try {
       const thumbnailResponse = await fetch(
@@ -32,9 +34,12 @@ export function Form() {
         setSearchLoading(false)
       } else {
         console.error('Error fetching thumbnail:', thumbnailResponse.status)
+        setError('Invalid video URL or other error occurred.')
+        setSearchLoading(false)
       }
     } catch (error) {
       console.error('Error fetching thumbnail:', error)
+      setError('Network error occurred.')
     }
   }
 
@@ -61,10 +66,12 @@ export function Form() {
         a.click()
       } else {
         console.error('Error downloading video:', downloadResponse.status)
+        setError('Error downloading video.') // Set error message
         setDownloadLoading(false)
       }
     } catch (error) {
       console.error('Error downloading video:', error)
+      setError('Network error occurred.') // Set error message
       setDownloadLoading(false)
     }
     setDownloadLoading(false)
@@ -75,7 +82,9 @@ export function Form() {
       <form
         action={`${apiUrl}/download`}
         method="post"
-        className="grid gap-1.5 mt-0 mb-2 sm:my-10">
+        className={`grid gap-1.5 mt-0 mb-2 mx-auto ${
+          !error ? 'sm:my-10' : 'sm:my-0'
+        }`}>
         <Label htmlFor="url">Enter Video URL:</Label>
         <Input
           type="text"
@@ -88,7 +97,12 @@ export function Form() {
         />
 
         {!searchLoading ? (
-          <Button type="button" onClick={handleSearch}>
+          <Button
+            type="button"
+            onClick={() => {
+              track('Search')
+              handleSearch()
+            }}>
             Search
           </Button>
         ) : (
@@ -99,7 +113,12 @@ export function Form() {
         )}
       </form>
 
-      {!videoInfo.url ? (
+      {error ? (
+        <div>
+          <div className="text-red-500 mb-5 mt-1">{error}</div>
+          <EmptyState />
+        </div>
+      ) : !videoInfo.url ? (
         <EmptyState />
       ) : (
         <div className="relative rounded-lg overflow-hidden">
@@ -112,7 +131,13 @@ export function Form() {
           />
           <div className="absolute inset-0 flex items-center justify-center bg-background/40">
             {!downloadLoading ? (
-              <Button variant="ghost" size="lg" onClick={handleDownload}>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => {
+                  track('Download')
+                  handleDownload()
+                }}>
                 Download
               </Button>
             ) : (
