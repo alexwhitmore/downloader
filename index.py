@@ -25,6 +25,31 @@ def sanitize(video_title: str):
     return sanitized_final
 
 
+@app.route("/api/get_thumbnail_url", methods=["GET"])
+@cross_origin()
+def get_thumbnail_url():
+    video_url = request.args.get("video_url")
+    try:
+        ydl_opts = {
+            "skip_download": True,
+            "write_thumbnail": True,
+            "outtmpl": "%(title)s.%(ext)s",
+        }
+
+        with YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(video_url, download=False)
+            thumbnail_url = info_dict["thumbnail"]
+            video_title = info_dict["title"]
+
+        if thumbnail_url:
+            response_data = {"url": thumbnail_url, "title": sanitize(video_title)}
+            return jsonify(response_data), 200
+        else:
+            return jsonify({"message": "No thumbnail available."}), 404
+    except Exception as e:
+        return jsonify({"error": f"Error getting the thumbnail URL: {str(e)}"}), 500
+
+
 @app.route("/api/upload_youtube", methods=["POST"])
 @cross_origin()
 def upload_youtube_video():
@@ -56,38 +81,13 @@ def upload_youtube_video():
             mimetype="video/mp4",
         )
 
-        os.remove(video_file_path)  # Clean up the temporary file
+        os.remove(video_file_path)
 
         return response
 
     except Exception as e:
         logging.error(f"Error uploading the video: {str(e)}")
         return jsonify({"error": f"Error uploading the video: {str(e)}"}), 500
-
-
-@app.route("/api/get_thumbnail_url", methods=["GET"])
-@cross_origin()
-def get_thumbnail_url():
-    video_url = request.args.get("video_url")
-    try:
-        ydl_opts = {
-            "skip_download": True,
-            "write_thumbnail": True,
-            "outtmpl": "%(title)s.%(ext)s",
-        }
-
-        with YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(video_url, download=False)
-            thumbnail_url = info_dict["thumbnail"]
-            video_title = info_dict["title"]
-
-        if thumbnail_url:
-            response_data = {"url": thumbnail_url, "title": sanitize(video_title)}
-            return jsonify(response_data), 200
-        else:
-            return jsonify({"message": "No thumbnail available."}), 404
-    except Exception as e:
-        return jsonify({"error": f"Error getting the thumbnail URL: {str(e)}"}), 500
 
 
 if __name__ == "__main__":

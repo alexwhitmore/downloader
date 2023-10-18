@@ -16,6 +16,7 @@ export function Form() {
   const [error, setError] = useState<string | null>(null)
 
   const apiUrl = process.env.NEXT_PUBLIC_AZURE_URL
+  // const apiUrl = 'http://127.0.0.1:5000/api'
 
   const handleSearch = async () => {
     if (!videoUrl) return
