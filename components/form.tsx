@@ -13,7 +13,7 @@ export function Form() {
   const [videoUrl, setVideoUrl] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
   const [downloadLoading, setDownloadLoading] = useState(false)
-  const [error, setError] = useState(null) // Add error state
+  const [error, setError] = useState<string | null>(null)
 
   const apiUrl = process.env.NEXT_PUBLIC_AZURE_URL
 
