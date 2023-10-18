@@ -66,12 +66,12 @@ export function Form() {
         a.click()
       } else {
         console.error('Error downloading video:', downloadResponse.status)
-        setError('Error downloading video.') // Set error message
+        setError('Error downloading video.')
         setDownloadLoading(false)
       }
     } catch (error) {
       console.error('Error downloading video:', error)
-      setError('Network error occurred.') // Set error message
+      setError('Network error occurred.')
       setDownloadLoading(false)
     }
     setDownloadLoading(false)
@@ -135,7 +135,7 @@ export function Form() {
                 variant="ghost"
                 size="lg"
                 onClick={() => {
-                  track('Download')
+                  track('Download', { url: videoInfo.title })
                   handleDownload()
                 }}>
                 Download
