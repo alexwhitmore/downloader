@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/empty-state'
+import { QualityDropdownMenu } from './quality'
 
 export function Form() {
   const [videoInfo, setVideoInfo] = useState({ url: '', title: '' })
@@ -100,7 +101,7 @@ export function Form() {
           <Button
             type="button"
             onClick={() => {
-              track('Search')
+              track('Search', { url: videoInfo.title })
               handleSearch()
             }}>
             Search
